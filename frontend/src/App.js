@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import "@/App.css";
-import axios from "axios";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import {
   Leaf,
   Download,
@@ -19,11 +18,114 @@ import {
   Timer,
   FileText,
   ShieldCheck,
+  ShoppingCart,
 } from "@phosphor-icons/react";
 import LeadMagnetPopup from "@/components/LeadMagnetPopup";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+// ============================================================
+// PAYHIP CONFIGURATION - UPDATE THESE WITH YOUR PAYHIP LINKS
+// ============================================================
+const PAYHIP_LINKS = {
+  journal: "https://payhip.com/b/YOUR_JOURNAL_LINK",
+  planner: "https://payhip.com/b/YOUR_PLANNER_LINK",
+  ebook: "https://payhip.com/b/YOUR_EBOOK_LINK",
+  workbook: "https://payhip.com/b/YOUR_WORKBOOK_LINK",
+  cards: "https://payhip.com/b/YOUR_CARDS_LINK",
+  bundle: "https://payhip.com/b/YOUR_BUNDLE_LINK",
+  lead_magnet: "https://payhip.com/b/YOUR_FREE_LEAD_MAGNET_LINK",
+};
+// ============================================================
+
+const PRODUCTS = [
+  {
+    id: "journal",
+    title: "90-Day Anxiety Relief Journal",
+    subtitle: "Daily Prompts, Mood Tracking & Gratitude Practice",
+    description: "Transform your relationship with anxiety over 90 days. Each day includes morning intentions, mood tracking, guided journaling prompts, gratitude practice, and evening reflections. Written with compassion and backed by CBT principles.",
+    price: "$12.99",
+    pages: "95+ pages",
+    category: "Journal",
+    color: "green",
+    features: [
+      "90 daily journal spreads with unique prompts",
+      "Morning intention & evening reflection sections",
+      "Mood tracking with 7-point scale",
+    ],
+    badge: "Best Seller",
+  },
+  {
+    id: "planner",
+    title: "Morning & Evening Routine Planner",
+    subtitle: "Build Calm Habits That Stick",
+    description: "Design your ideal morning and evening routines with this structured planner. Includes 30 daily routine sheets with checklists, weekly habit trackers, and reflection spaces. Perfect companion to the journal.",
+    price: "$9.99",
+    pages: "38 pages",
+    category: "Planner",
+    color: "gold",
+    features: [
+      "30 daily routine planning sheets",
+      "Morning & evening checklists",
+      "4 weekly habit tracker grids",
+    ],
+    badge: "Popular",
+  },
+  {
+    id: "ebook",
+    title: "The Calm Mind",
+    subtitle: "A Complete Guide to Understanding & Managing Anxiety",
+    description: "Learn the science behind anxiety and master evidence-based techniques for lasting calm. Covers breathing methods, cognitive reframing, mindfulness, routine building, and when to seek help. Your comprehensive anxiety toolkit.",
+    price: "$14.99",
+    pages: "50+ pages",
+    category: "Ebook",
+    color: "teal",
+    features: [
+      "9 in-depth chapters",
+      "Evidence-based techniques",
+      "Breathing method guides",
+    ],
+    badge: "Comprehensive",
+  },
+  {
+    id: "workbook",
+    title: "Weekly Reflection Workbook",
+    subtitle: "12 Weeks of Guided Self-Discovery",
+    description: "Deep dive into your weekly patterns with themed reflection pages. Each week focuses on a different aspect of mental wellness: awareness, acceptance, gratitude, boundaries, self-compassion, and more.",
+    price: "$9.99",
+    pages: "14 pages",
+    category: "Workbook",
+    color: "indigo",
+    features: [
+      "12 themed weekly spreads",
+      "Weekly wins & challenges sections",
+      "Guided reflection questions",
+    ],
+    badge: "Deep Work",
+  },
+  {
+    id: "cards",
+    title: "Mindfulness & Breathing Exercise Cards",
+    subtitle: "20 Printable Cards for Instant Calm",
+    description: "Print, cut, and keep these 20 exercise cards anywhere you need them. Each card has step-by-step instructions for a different calming technique, from box breathing to body scans to grounding exercises.",
+    price: "$7.99",
+    pages: "12 pages (20 cards)",
+    category: "Cards",
+    color: "coral",
+    features: [
+      "20 unique exercise cards",
+      "Step-by-step instructions",
+      "Duration & difficulty ratings",
+    ],
+    badge: "Quick Use",
+  },
+];
+
+const BUNDLE = {
+  title: "The Complete Calm Mind Collection",
+  original_price: "$55.95",
+  bundle_price: "$29.99",
+  savings: "Save 46%",
+  description: "Get all 5 products together and save. Everything you need to manage anxiety, build calm routines, and create lasting peace of mind.",
+};
 
 const colorMap = {
   green: { badge: "badge-green", card: "product-green", icon: "#3A5A40" },
@@ -80,10 +182,10 @@ function Navbar() {
           </span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-          <a href="#products" className="font-body" style={{ fontSize: 14, fontWeight: 500, color: "var(--muted-fg)", textDecoration: "none", transition: "color 0.2s" }} data-testid="nav-products-link">Products</a>
+          <a href="#products" className="font-body" style={{ fontSize: 14, fontWeight: 500, color: "var(--muted-fg)", textDecoration: "none" }} data-testid="nav-products-link">Products</a>
           <a href="#bundle" className="font-body" style={{ fontSize: 14, fontWeight: 500, color: "var(--muted-fg)", textDecoration: "none" }} data-testid="nav-bundle-link">Bundle</a>
           <a href="#about" className="font-body" style={{ fontSize: 14, fontWeight: 500, color: "var(--muted-fg)", textDecoration: "none" }} data-testid="nav-about-link">About</a>
-          <a href="#bundle" className="btn-primary" style={{ padding: "10px 24px", fontSize: 13 }} data-testid="nav-cta-btn">Get the Bundle</a>
+          <a href={PAYHIP_LINKS.bundle} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: "10px 24px", fontSize: 13 }} data-testid="nav-cta-btn">Get the Bundle</a>
         </div>
       </div>
     </nav>
@@ -134,7 +236,7 @@ function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5 }}
         >
-          <a href="#bundle" className="btn-accent" data-testid="hero-bundle-btn">
+          <a href={PAYHIP_LINKS.bundle} target="_blank" rel="noopener noreferrer" className="btn-accent" data-testid="hero-bundle-btn">
             <Package size={18} weight="bold" /> Get the Full Bundle
           </a>
           <a href="#products" className="btn-secondary" data-testid="hero-explore-btn">
@@ -184,15 +286,7 @@ function HeroSection() {
 function ProductCard({ product, index }) {
   const colors = colorMap[product.color] || colorMap.green;
   const Icon = productIcons[product.id] || BookOpen;
-
-  const handleDownload = async () => {
-    try {
-      await axios.post(`${API}/track-download/${product.id}`);
-      window.open(`${API}/download/${product.id}`, "_blank");
-    } catch (e) {
-      window.open(`${API}/download/${product.id}`, "_blank");
-    }
-  };
+  const payhipLink = PAYHIP_LINKS[product.id] || "#";
 
   return (
     <FadeInSection delay={index * 0.1}>
@@ -227,7 +321,7 @@ function ProductCard({ product, index }) {
         </p>
 
         <div style={{ marginBottom: 16 }}>
-          {product.features.slice(0, 3).map((f, i) => (
+          {product.features.map((f, i) => (
             <div key={i} className="feature-check">
               <div className="check-icon" style={{ background: "rgba(58, 90, 64, 0.1)" }}>
                 <Check size={12} weight="bold" color="var(--primary)" />
@@ -242,21 +336,23 @@ function ProductCard({ product, index }) {
             <span style={{ fontSize: 24, fontWeight: 700, color: "var(--fg)" }}>{product.price}</span>
             <span style={{ fontSize: 12, color: "var(--muted-fg)", marginLeft: 6 }}>{product.pages}</span>
           </div>
-          <button
+          <a
+            href={payhipLink}
+            target="_blank"
+            rel="noopener noreferrer"
             className="btn-primary"
-            style={{ padding: "10px 20px", fontSize: 13 }}
-            onClick={handleDownload}
-            data-testid={`download-btn-${product.id}`}
+            style={{ padding: "10px 20px", fontSize: 13, textDecoration: "none" }}
+            data-testid={`buy-btn-${product.id}`}
           >
-            <Download size={16} weight="bold" /> Download
-          </button>
+            <ShoppingCart size={16} weight="bold" /> Buy Now
+          </a>
         </div>
       </div>
     </FadeInSection>
   );
 }
 
-function ProductsSection({ products }) {
+function ProductsSection() {
   return (
     <section id="products" className="section-gap" data-testid="products-section">
       <div className="section-container">
@@ -275,7 +371,7 @@ function ProductsSection({ products }) {
         </FadeInSection>
 
         <div className="bento-grid">
-          {products.map((product, i) => (
+          {PRODUCTS.map((product, i) => (
             <ProductCard key={product.id} product={product} index={i} />
           ))}
         </div>
@@ -284,7 +380,7 @@ function ProductsSection({ products }) {
   );
 }
 
-function BundleSection({ bundle }) {
+function BundleSection() {
   return (
     <section id="bundle" className="bundle-section section-gap" data-testid="bundle-section">
       <div className="section-container" style={{ position: "relative", zIndex: 1 }}>
@@ -295,18 +391,18 @@ function BundleSection({ bundle }) {
             </span>
 
             <h2 className="font-serif" style={{ fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 700, color: "white", marginBottom: 16, letterSpacing: "-0.02em" }}>
-              {bundle.title}
+              {BUNDLE.title}
             </h2>
 
             <p className="font-body" style={{ fontSize: 17, color: "rgba(255,255,255,0.7)", marginBottom: 40, lineHeight: 1.7 }}>
-              {bundle.description}
+              {BUNDLE.description}
             </p>
 
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 32 }}>
-              <span className="price-original" style={{ fontSize: 24, color: "rgba(255,255,255,0.4)" }}>{bundle.original_price}</span>
-              <span style={{ fontSize: 48, fontWeight: 800, color: "#E9C46A" }}>{bundle.bundle_price}</span>
+              <span className="price-original" style={{ fontSize: 24, color: "rgba(255,255,255,0.4)" }}>{BUNDLE.original_price}</span>
+              <span style={{ fontSize: 48, fontWeight: 800, color: "#E9C46A" }}>{BUNDLE.bundle_price}</span>
               <span style={{ background: "rgba(231, 111, 81, 0.9)", color: "white", padding: "6px 14px", borderRadius: 50, fontSize: 13, fontWeight: 700 }}>
-                {bundle.savings}
+                {BUNDLE.savings}
               </span>
             </div>
 
@@ -324,22 +420,19 @@ function BundleSection({ bundle }) {
               ))}
             </div>
 
-            <button
+            <a
+              href={PAYHIP_LINKS.bundle}
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-accent"
-              style={{ padding: "18px 48px", fontSize: 17 }}
+              style={{ padding: "18px 48px", fontSize: 17, textDecoration: "none", display: "inline-flex" }}
               data-testid="bundle-cta-btn"
-              onClick={() => {
-                const link = document.createElement("a");
-                link.href = `${API}/download-all`;
-                link.target = "_blank";
-                window.location.href = `${API}/download-all`;
-              }}
             >
               <Package size={20} weight="bold" /> Get the Complete Bundle
-            </button>
+            </a>
 
             <p className="font-handwriting" style={{ fontSize: 20, color: "rgba(233, 196, 106, 0.6)", marginTop: 16 }}>
-              Available on Payhip
+              Secure checkout on Payhip
             </p>
           </div>
         </FadeInSection>
@@ -499,44 +592,12 @@ function Footer() {
 }
 
 function App() {
-  const [products, setProducts] = useState([]);
-  const [bundle, setBundle] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await axios.get(`${API}/products`);
-        setProducts(res.data.products);
-        setBundle(res.data.bundle);
-      } catch (e) {
-        console.error("Failed to fetch products:", e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
-
-  if (loading) {
-    return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg)" }} data-testid="loading-screen">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-        >
-          <Leaf size={40} weight="duotone" color="var(--primary)" />
-        </motion.div>
-      </div>
-    );
-  }
-
   return (
     <div data-testid="app-container">
       <Navbar />
       <HeroSection />
-      <ProductsSection products={products} />
-      {bundle && <BundleSection bundle={bundle} />}
+      <ProductsSection />
+      <BundleSection />
       <TestimonialsSection />
       <AboutSection />
       <Footer />

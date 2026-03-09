@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Gift, EnvelopeSimple, ArrowRight, Check, SpinnerGap } from "@phosphor-icons/react";
-import axios from "axios";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+// ============================================================
+// UPDATE THIS WITH YOUR FREE PAYHIP LEAD MAGNET LINK
+// On Payhip, create a $0 (free) product with the lead magnet PDF
+// and set it to "Pay What You Want" with minimum $0
+// This way Payhip captures the email FOR you automatically!
+// ============================================================
+const LEAD_MAGNET_LINK = "https://payhip.com/b/YOUR_FREE_LEAD_MAGNET_LINK";
 
 export default function LeadMagnetPopup() {
   const [show, setShow] = useState(false);
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [status, setStatus] = useState("idle"); // idle | loading | success | error
-  const [message, setMessage] = useState("");
+  const [clicked, setClicked] = useState(false);
 
   useEffect(() => {
     const dismissed = sessionStorage.getItem("lead_popup_dismissed");
@@ -41,23 +42,12 @@ export default function LeadMagnetPopup() {
     sessionStorage.setItem("lead_popup_dismissed", "true");
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!email) return;
-
-    setStatus("loading");
-    try {
-      const res = await axios.post(`${API}/subscribe`, { email, name });
-      setStatus("success");
-      setMessage(res.data.message);
-      // Auto-download after short delay
-      setTimeout(() => {
-        window.open(`${API}/lead-magnet`, "_blank");
-      }, 1000);
-    } catch (err) {
-      setStatus("error");
-      setMessage("Something went wrong. Please try again.");
-    }
+  const handleGetGuide = () => {
+    setClicked(true);
+    window.open(LEAD_MAGNET_LINK, "_blank");
+    setTimeout(() => {
+      handleClose();
+    }, 2000);
   };
 
   return (
@@ -131,7 +121,6 @@ export default function LeadMagnetPopup() {
                     alignItems: "center",
                     justifyContent: "center",
                     cursor: "pointer",
-                    transition: "background 0.2s",
                   }}
                   data-testid="lead-magnet-close-btn"
                 >
@@ -192,13 +181,13 @@ export default function LeadMagnetPopup() {
                 </p>
               </div>
 
-              {/* Form area */}
+              {/* CTA area */}
               <div style={{ padding: "24px 32px 28px" }}>
-                {status === "success" ? (
+                {clicked ? (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    style={{ textAlign: "center" }}
+                    style={{ textAlign: "center", padding: "16px 0" }}
                     data-testid="lead-magnet-success"
                   >
                     <div
@@ -216,114 +205,39 @@ export default function LeadMagnetPopup() {
                       <Check size={28} weight="bold" color="#166534" />
                     </div>
                     <p style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A", marginBottom: 8 }}>
-                      {message}
+                      Opening your free guide!
                     </p>
                     <p style={{ fontSize: 13, color: "#5C5C5C" }}>
-                      Your PDF is downloading now...
+                      Complete the free checkout to get your PDF.
                     </p>
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleSubmit} data-testid="lead-magnet-form">
-                    <div style={{ marginBottom: 12 }}>
-                      <label
-                        style={{
-                          display: "block",
-                          fontSize: 13,
-                          fontWeight: 600,
-                          color: "#1A1A1A",
-                          marginBottom: 6,
-                          fontFamily: "'Manrope', sans-serif",
-                        }}
-                      >
-                        First name (optional)
-                      </label>
-                      <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Your first name"
-                        style={{
-                          width: "100%",
-                          padding: "12px 16px",
-                          borderRadius: 12,
-                          border: "1.5px solid #E6E2D8",
-                          fontSize: 14,
-                          fontFamily: "'Manrope', sans-serif",
-                          outline: "none",
-                          transition: "border-color 0.2s",
-                          boxSizing: "border-box",
-                        }}
-                        data-testid="lead-magnet-name-input"
-                      />
+                  <div data-testid="lead-magnet-cta-area">
+                    <div style={{ marginBottom: 20 }}>
+                      {[
+                        "Physiological Sigh - calm in 30 seconds",
+                        "5-4-3-2-1 Grounding technique",
+                        "Box Breathing used by Navy SEALs",
+                        "Butterfly Hug for emotional overwhelm",
+                        "4-7-8 Sleep Breath for insomnia",
+                      ].map((item, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                          <Check size={14} weight="bold" color="#3A5A40" />
+                          <span style={{ fontSize: 13, color: "#5C5C5C", fontFamily: "'Manrope', sans-serif" }}>{item}</span>
+                        </div>
+                      ))}
                     </div>
-
-                    <div style={{ marginBottom: 16 }}>
-                      <label
-                        style={{
-                          display: "block",
-                          fontSize: 13,
-                          fontWeight: 600,
-                          color: "#1A1A1A",
-                          marginBottom: 6,
-                          fontFamily: "'Manrope', sans-serif",
-                        }}
-                      >
-                        Email address *
-                      </label>
-                      <div style={{ position: "relative" }}>
-                        <EnvelopeSimple
-                          size={18}
-                          color="#5C5C5C"
-                          style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }}
-                        />
-                        <input
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder="you@example.com"
-                          required
-                          style={{
-                            width: "100%",
-                            padding: "12px 16px 12px 40px",
-                            borderRadius: 12,
-                            border: "1.5px solid #E6E2D8",
-                            fontSize: 14,
-                            fontFamily: "'Manrope', sans-serif",
-                            outline: "none",
-                            transition: "border-color 0.2s",
-                            boxSizing: "border-box",
-                          }}
-                          data-testid="lead-magnet-email-input"
-                        />
-                      </div>
-                    </div>
-
-                    {status === "error" && (
-                      <p style={{ color: "#E76F51", fontSize: 13, marginBottom: 12 }} data-testid="lead-magnet-error">
-                        {message}
-                      </p>
-                    )}
 
                     <button
-                      type="submit"
-                      disabled={status === "loading"}
+                      onClick={handleGetGuide}
                       className="btn-accent"
                       style={{
                         width: "100%",
                         justifyContent: "center",
-                        opacity: status === "loading" ? 0.7 : 1,
                       }}
                       data-testid="lead-magnet-submit-btn"
                     >
-                      {status === "loading" ? (
-                        <>
-                          <SpinnerGap size={18} className="animate-spin" /> Sending...
-                        </>
-                      ) : (
-                        <>
-                          Get My Free Guide <ArrowRight size={18} weight="bold" />
-                        </>
-                      )}
+                      Get My Free Guide <ArrowRight size={18} weight="bold" />
                     </button>
 
                     <p
@@ -334,9 +248,9 @@ export default function LeadMagnetPopup() {
                         marginTop: 12,
                       }}
                     >
-                      No spam, ever. Just calm vibes.
+                      Free on Payhip - no credit card required
                     </p>
-                  </form>
+                  </div>
                 )}
               </div>
             </div>
