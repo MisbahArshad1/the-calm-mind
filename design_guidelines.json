@@ -1,0 +1,122 @@
+{
+  "project_name": "The Calm Mind Collection",
+  "version": "1.0.0",
+  "last_updated": "2026-05-20",
+  "design_philosophy": {
+    "identity": "E1 - Organic Modernism meets Vibrant Wellness",
+    "core_principles": [
+      "Fusion: Botanical aesthetics mixed with high-conversion e-commerce layouts",
+      "Emotion First: Every interaction should feel like a 'deep breath'",
+      "Content is King: The copy guides the user through a journey of relief",
+      "Zoom In: High-fidelity textures for digital products to make them feel physical",
+      "Negative Space: Luxurious padding to prevent cognitive overload"
+    ],
+    "anti_patterns": [
+      "Sterile clinical blues",
+      "Generic center-aligned hero sections without visual weight",
+      "Flat, lifeless product mockups",
+      "Default Bootstrap/Tailwind grids"
+    ]
+  },
+  "typography": {
+    "font_family": {
+      "heading": "Playfair Display, serif",
+      "body": "Manrope, sans-serif",
+      "accent": "Caveat, handwriting"
+    },
+    "scale": {
+      "h1": "text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]",
+      "h2": "text-4xl md:text-5xl font-semibold tracking-tight",
+      "h3": "text-2xl md:text-3xl font-medium",
+      "body_lg": "text-lg md:text-xl leading-relaxed text-muted-foreground",
+      "body": "text-base leading-relaxed text-muted-foreground",
+      "caption": "text-sm font-medium tracking-wide uppercase text-muted-foreground/80"
+    },
+    "usage_rules": "Headings must be Playfair Display. Use italics for emphasis in headings to create an editorial look. Body text must be Manrope for maximum readability. Use Caveat for 'human touches' like annotations or testimonials."
+  },
+  "colors": {
+    "palette": {
+      "background": "#FDFCF8",
+      "foreground": "#1A1A1A",
+      "primary": "#3A5A40",
+      "primary_foreground": "#FFFFFF",
+      "secondary": "#E9C46A",
+      "secondary_foreground": "#1A1A1A",
+      "accent": "#E76F51",
+      "accent_foreground": "#FFFFFF",
+      "muted": "#F2F0E9",
+      "muted_foreground": "#5C5C5C",
+      "border": "#E6E2D8",
+      "input": "#E6E2D8"
+    },
+    "product_specific": {
+      "journal": { "bg": "bg-green-100", "text": "text-green-800", "border": "border-green-200" },
+      "planner": { "bg": "bg-yellow-100", "text": "text-yellow-800", "border": "border-yellow-200" },
+      "ebook": { "bg": "bg-teal-100", "text": "text-teal-800", "border": "border-teal-200" },
+      "workbook": { "bg": "bg-indigo-100", "text": "text-indigo-800", "border": "border-indigo-200" },
+      "cards": { "bg": "bg-rose-100", "text": "text-rose-800", "border": "border-rose-200" }
+    },
+    "gradients": {
+      "hero_glow": "background: radial-gradient(circle at 50% 50%, rgba(233, 196, 106, 0.15) 0%, rgba(253, 252, 248, 0) 70%)",
+      "bundle_mesh": "background: radial-gradient(at top left, #E9C46A 0%, transparent 50%), radial-gradient(at bottom right, #E76F51 0%, transparent 50%)"
+    }
+  },
+  "layout_strategy": {
+    "container": "max-w-7xl mx-auto px-6 md:px-12",
+    "spacing": {
+      "section_gap": "py-24 md:py-32",
+      "element_gap": "gap-8 md:gap-12"
+    },
+    "grid_system": "Use the 'Bento Grid' strategy. Avoid equal-sized cards for everything. Mix tall, wide, and square cards to create visual interest.",
+    "border_radius": "rounded-2xl md:rounded-3xl"
+  },
+  "components": {
+    "hero": {
+      "style": "Split layout or Centered with massive typography. Must use a 'Sunlight' glow effect behind the main image.",
+      "content": "Headline: 'Reclaim Your Calm'. Subhead: 'A curated collection of tools for anxiety relief and mindfulness.' CTA: 'Get the Bundle'."
+    },
+    "product_card": {
+      "style": "Clean, high-padding card with a colored background tint (subtle) corresponding to the product type. Hover: Lift and shadow.",
+      "elements": ["Product Title (Serif)", "Tagline", "Price tag", "Download/Buy Button", "Preview Image with shadow-xl"]
+    },
+    "buttons": {
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 h-12 px-8 rounded-full font-medium transition-all hover:scale-105 shadow-lg shadow-primary/20",
+      "secondary": "bg-white border-2 border-primary/20 text-primary hover:border-primary hover:bg-primary/5 h-12 px-8 rounded-full font-medium transition-all"
+    },
+    "visual_enhancers": {
+      "textures": "Use a subtle SVG noise filter overlay on the background (opacity 0.03) to simulate paper.",
+      "shadows": "shadow-[0_8px_30px_rgb(0,0,0,0.04)] for cards. shadow-[0_20px_50px_rgb(0,0,0,0.1)] for floating images."
+    }
+  },
+  "motion": {
+    "library": "Framer Motion",
+    "scrolling": "Lenis (smooth scroll) is MANDATORY.",
+    "effects": [
+      "Staggered fade-in-up for grid items",
+      "Parallax effect on background botanical elements",
+      "Slow breathing animation (scale 1 to 1.02) for the 'Calm' hero image"
+    ]
+  },
+  "images": {
+    "guidelines": "All images must feel 'warm', 'morning light', and 'authentic'. Avoid generic corporate stock.",
+    "hero_main": "https://images.unsplash.com/photo-1558086478-d632ccc5a833?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHwxfHxjb3p5JTIwd29tYW4lMjBqb3VybmFsaW5nJTIwbW9ybmluZyUyMHN1bmxpZ2h0fGVufDB8fHx8MTc3MzA5NDI2OHww&ixlib=rb-4.1.0&q=85",
+    "journal_mockup": "https://images.unsplash.com/photo-1750259206427-640fb2196b11?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHw0fHxjb3p5JTIwd29tYW4lMjBqb3VybmFsaW5nJTIwbW9ybmluZyUyMHN1bmxpZ2h0fGVufDB8fHx8MTc3MzA5NDI2OHww&ixlib=rb-4.1.0&q=85",
+    "atmosphere_1": "https://images.unsplash.com/photo-1764258777840-34e578a497f7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNTl8MHwxfHNlYXJjaHwyfHxtaW5pbWFsaXN0JTIwYm90YW5pY2FsJTIwbmF0dXJlJTIwbGVhdmVzfGVufDB8fHx8MTc3MzA5NDI3MHww&ixlib=rb-4.1.0&q=85",
+    "atmosphere_2": "https://images.unsplash.com/photo-1766674745516-6a31204662a2?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNTl8MHwxfHNlYXJjaHwxfHxtaW5pbWFsaXN0JTIwYm90YW5pY2FsJTIwbmF0dXJlJTIwbGVhdmVzfGVufDB8fHx8MTc3MzA5NDI3MHww&ixlib=rb-4.1.0&q=85",
+    "testimonial_avatar_1": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80",
+    "testimonial_avatar_2": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+  },
+  "assets_installation": [
+    "yarn add @phosphor-icons/react",
+    "yarn add framer-motion",
+    "yarn add lenis",
+    "yarn add clsx tailwind-merge"
+  ],
+  "universal_guidelines": [
+    "Do not use generic gradients.",
+    "Ensure 3:1 contrast for all text.",
+    "Use data-testid for all interactive elements.",
+    "Do not use 'Inter' for headings. Use Playfair Display.",
+    "For shadows, use colored shadows (e.g. shadow-green-900/10) to avoid muddy grays."
+  ]
+}
