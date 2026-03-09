@@ -20,6 +20,7 @@ import {
   FileText,
   ShieldCheck,
 } from "@phosphor-icons/react";
+import LeadMagnetPopup from "@/components/LeadMagnetPopup";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -539,6 +540,7 @@ function App() {
       <TestimonialsSection />
       <AboutSection />
       <Footer />
+      <LeadMagnetPopup />
     </div>
   );
 }

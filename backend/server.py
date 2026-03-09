@@ -12,6 +12,7 @@ import uuid
 from datetime import datetime, timezone
 
 from generators.pdf_generator import generate_all_pdfs, OUTPUT_DIR
+from generators.lead_magnet import generate_lead_magnet
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -193,6 +194,19 @@ class DownloadEvent(BaseModel):
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
+class EmailSubscriber(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    email: str
+    name: str = ""
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class EmailInput(BaseModel):
+    email: str
+    name: str = ""
+
+
 @api_router.post("/track-download/{product_id}")
 async def track_download(product_id: str):
     event = DownloadEvent(product_id=product_id)
@@ -210,7 +224,32 @@ async def get_stats():
         count = await db.downloads.count_documents({"product_id": p["id"]})
         stats[p["id"]] = count
     total = sum(stats.values())
-    return {"downloads_by_product": stats, "total_downloads": total}
+    sub_count = await db.subscribers.count_documents({})
+    return {"downloads_by_product": stats, "total_downloads": total, "total_subscribers": sub_count}
+
+
+@api_router.post("/subscribe")
+async def subscribe(input: EmailInput):
+    existing = await db.subscribers.find_one({"email": input.email}, {"_id": 0})
+    if existing:
+        return {"status": "already_subscribed", "message": "You're already subscribed! Check your downloads."}
+    subscriber = EmailSubscriber(email=input.email, name=input.name)
+    doc = subscriber.model_dump()
+    doc['timestamp'] = doc['timestamp'].isoformat()
+    await db.subscribers.insert_one(doc)
+    return {"status": "success", "message": "Welcome! Your free guide is ready to download."}
+
+
+@api_router.get("/lead-magnet")
+async def download_lead_magnet():
+    filepath = OUTPUT_DIR / "5_emergency_calm_techniques.pdf"
+    if filepath.exists():
+        return FileResponse(
+            path=str(filepath),
+            filename="5_emergency_calm_techniques.pdf",
+            media_type="application/pdf",
+        )
+    return {"error": "File not found"}
 
 
 app.include_router(api_router)
@@ -235,7 +274,9 @@ async def startup_event():
     global PDF_PATHS
     logger.info("Generating PDFs...")
     PDF_PATHS = generate_all_pdfs()
+    lead_magnet_path = generate_lead_magnet()
     logger.info(f"PDFs generated: {list(PDF_PATHS.keys())}")
+    logger.info(f"Lead magnet generated: {lead_magnet_path}")
 
 
 @app.on_event("shutdown")
